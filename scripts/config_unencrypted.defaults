@@ -1,0 +1,45 @@
+# EncroCam unencrypted configuration
+
+# The installer will fill in some of these variables.
+# Modifying this file manually may break the setup, e.g.: you may need to relink a symlink that was made during the installation.
+# Feel free to change things, just be aware that you also need to update the corresponding system if it points to an external resource :)
+
+# Config file format:
+#  - Blank lines and lines starting with a # are ignored
+#  - Lines start with a variable name, then an equals sign, and then the value
+#  - The value starts after the first equals sign and ends with the newline byte
+#  - Variable names are recommended to consist of alphanumeric characters and underscores
+#  - Do not add whitespace, e.g.: "a = b" (WRONG)
+#  - Example (good): "a=b"
+#  - ASCII only because we rely on there not being multibyte characters
+#  - Control characters (byte values below 0x20, space) are not allowed anywhere on a line
+
+# The full path to the directory where recordings should be stored
+data_location=recordings
+
+# Where to find files such as record.py. It is also the default storage location if no custom paths are chosen.
+encrocam_homedir=
+
+# The PGP key fingerprint to use for signing the video stream data
+signing_key_fingerprint=
+
+# The PGP key fingerprint to use for encrypting the video stream data
+# Note that this must be verified for GnuPG to not refuse encrypting for it. This can be done with:
+#   gpg --homedir EncroCam/encrypted_mountpoint/gpg_homedir/ --quick-lsign-key FINGERPRINT_HERE
+encryption_key_fingerprint=
+
+# Encrypted partition is stored here (relative to homedir)
+encrypted_file=encrypted.ext4
+
+# A name passed to cryptsetup for the encrypted partition
+luks_device_name=encrocam-partition
+
+# Restarting the sync process to prevent memory leaks or disconnect invalid state craziness. The opportunity is also taken to do maintenance like removing old files locally and remotely. 
+sync_restart_after_minutes=180
+
+# Suppress the lecture about system passwords after the user confirmed this once
+OS_security_has_been_set_up=0
+
+# Name you will see in `screen -ls`
+screen_session_name=encrocam
+

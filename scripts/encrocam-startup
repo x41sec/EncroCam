@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+set -e  # exit if something fails
+
+[ "`id -u`" -eq 0 ] && echo 'No need to run this as root (the script will call sudo when needed).' && exit 2
+
+# Go to the current script's directory, also if we got called via a symlink. Should end up in `${encrocam_homedir}/scripts`
+cd -- "$(dirname "$(readlink -f "$0")")"
+source common.sh
+
+encrocam_homedir="$(getConfig 'encrocam_homedir')"
+encrypted_file="$(getConfig 'encrypted_file')"
+luks_device_name="$(getConfig 'luks_device_name')"
+if [ ! -d "${encrocam_homedir}/encrypted_mountpoint/gpg_homedir" ]; then
+	echo "Unlocking encrypted image, please enter the password when prompted...${questionColor}"
+	sudo cryptsetup open "${encrocam_homedir}/${encrypted_file}" "${luks_device_name}"
+	echo "${resetColor}"
+	sudo mount -t ext4 "/dev/mapper/${luks_device_name}" "${encrocam_homedir}/encrypted_mountpoint"
+fi
+
+# Tried to make it flush disk writes faster, but this had no effect. Still the same amount of delay between what's in
+# the room and what's on disk when you pull power. Leaving it here for posterity.
+#sudo bash -c 'echo mq-deadline > /sys/block/sda/queue/scheduler'
+#sudo bash -c 'echo 250 > /sys/block/sda/queue/iosched/write_expire'
+
+if [ "$1" == 'nostart' ]; then
+	exit 0
+fi
+
+screen_session_name="$(getConfig 'screen_session_name')"
+if [ -z "$(screen -ls | grep "${screen_session_name}")" ]; then
+	screen -dmS "${screen_session_name}" ./start.bash
+	echo "Started a screen session called '${screen_session_name}'."
+else
+	echo "There is already a screen session called '${screen_session_name}'."
+fi
+
+echo "To stop EncroCam, run '${encrocam_homedir}/stop'"
+

@@ -1,0 +1,5 @@
+__pycache__/
+scripts/config_unencrypted
+encrypted.ext4
+encrypted_mountpoint/
+logs/

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# Little wrapper to call into the right location.
+# Not a symlink because Windows doesn't handle those properly unless you did some steps manually first, like (from a quick web search) turning on developer mode and telling git to use symlinks
+
+"$(dirname "$(readlink -f "$0")")"/src/decrypter.py "$@"
+
